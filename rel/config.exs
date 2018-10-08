@@ -48,7 +48,7 @@ end
 # when running `mix release`, the first release in the file
 # will be used by default
 
-release :memory3 do
+release :memory do
   set version: current_version(:memory)
   set applications: [
     :runtime_tools
