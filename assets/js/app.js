@@ -15,13 +15,14 @@ import $ from "jquery";
 // Import local files
 //
 // Local files can be imported directly using relative paths, for example:
-import socket from "./socket";
+import {Socket} from "phoenix";
 import game_init from "./memory";
 
 // The js below is taken  from nat's lecture notes
 
 function start() {
     let root = document.getElementById('root');
+    let socket = new Socket("/socket", {params: {token: window.userToken}});
     if (root) {
         socket.connect();
         let channel = socket.channel("games:" + window.gameName, {});
