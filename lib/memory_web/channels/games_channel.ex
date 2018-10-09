@@ -1,7 +1,7 @@
 defmodule MemoryWeb.GamesChannel do
   use MemoryWeb, :channel
   alias Memory.Game
-  alias Memory.BackupAgent
+  alias Memory.GameServer
 
   # From nat's lecture notes
 
@@ -19,11 +19,8 @@ defmodule MemoryWeb.GamesChannel do
   end
 
   def handle_in("click", %{"index" => ii}, socket) do
-    name = socket.assigns[:name]
-    game = Game.click(socket.assigns[:game], ii)
-    socket = assign(socket, :game, game)
-    BackupAgent.put(name, game)
-    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
+    view = GameServer.click(socket.assigns[:game], socket.assigns[:user], ii)
+    {:reply, {:ok, %{ "game" => view}}, socket}
   end
 
   def handle_in("restart", nil, socket) do
@@ -34,8 +31,8 @@ defmodule MemoryWeb.GamesChannel do
     {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
   end
 
-  # Add authorization logic here as required.
   defp authorized?(_payload) do
+    ## TODO check somethign here?
     true
   end
 end

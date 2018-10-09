@@ -14,7 +14,7 @@ defmodule Memory.Game do
 #
 #
 
-  # Things to keep track of:
+  # Things to keep track of:index
   # numClicks: 0,
   # visibleTiles: {},
   # inactiveTiles: {},
@@ -28,6 +28,8 @@ defmodule Memory.Game do
       numClicks: 0,
       visibleTiles: [],
       inactiveTiles: [],
+      players: %{},
+      currentPlayer: 1,
     }
   end
 
@@ -37,10 +39,21 @@ defmodule Memory.Game do
       numClicks: 0,
       visibleTiles: [],
       inactiveTiles: [],
+      players: %{},
+      currentPlayer: 1,
     }
   end
 
-  def client_view(game) do
+  def new_player(game) do
+    # Increment player number
+    %{
+      playerNum: 1,
+      numClicks: 0,
+      numCorrect: 0,
+    }
+  end
+
+  def client_view(game, user) do
     %{
       numClicks: game.numClicks,
       visibleTiles: game.visibleTiles,
@@ -67,6 +80,7 @@ defmodule Memory.Game do
   end
 
   def inactive_tiles(game, index) do
+    # TODO record if player has scored tiles
     if (length(game.visibleTiles) == 2) do
       visible_tile1 = Enum.at(game.visibleTiles, 0)
       visible_tile2 = Enum.at(game.visibleTiles, 1)
@@ -81,14 +95,21 @@ defmodule Memory.Game do
     end
   end
 
-  def click(game, index) do
+  def click(game, user, index) do
     if index >= 16 || index < 0 do
       raise "That's not a real tile"
     end
 
-    new_game = Map.put(game, :numClicks, game.numClicks + 1)
-    new_game = Map.put(new_game, :visibleTiles, visible_tiles(game, index))
-    Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, index))
+    pinfo = Map.get(game, user, new_player(game))
+
+    new_game = game
+    if (pinfo.playerNum == game.currentPlayer) do
+#      TODO update currentPlayer
+      new_game = Map.put(game, :numClicks, game.numClicks + 1) # TODO convert this to per-player click count
+      new_game = Map.put(new_game, :visibleTiles, visible_tiles(game, index))
+      Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, index))
+    end
+    Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
   end
 
   def new_game do
