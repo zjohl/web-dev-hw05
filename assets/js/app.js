@@ -21,15 +21,11 @@ import game_init from "./memory";
 // The js below is taken  from nat's lecture notes
 
 function start() {
-  socket.connect();
     let root = document.getElementById('root');
     if (root) {
+        socket.connect();
         let channel = socket.channel("games:" + window.gameName, {});
         game_init(root, channel);
-    }
-
-    if (document.getElementById('game-input')) {
-        form_init();
     }
 }
 

@@ -9,7 +9,7 @@ defmodule MemoryWeb.Plugs.PutUserToken do
       token = Phoenix.Token.sign(conn, "user socket", user)
       assign(conn, :user_token, token)
     else
-      assign(conn, :user_token, "")
+      conn
     end
   end
 end
