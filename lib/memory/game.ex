@@ -112,7 +112,7 @@ defmodule Memory.Game do
       new_game = Map.put(new_game, :visibleTiles, visible_tiles(game, index))
       Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, index))
     end
-    Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
+    Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
   end
 
   def new_game do
