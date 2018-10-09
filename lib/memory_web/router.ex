@@ -8,6 +8,7 @@ defmodule MemoryWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :put_user_token
+    plug MemoryWeb.Plugs.PutUserToken
   end
 
   pipeline :api do

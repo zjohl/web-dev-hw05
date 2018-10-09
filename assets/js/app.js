@@ -20,20 +20,8 @@ import game_init from "./memory";
 
 // The js below is taken  from nat's lecture notes
 
-function form_init() {
-    let channel = socket.channel("games:demo", {});
-    channel.join()
-        .receive("ok", resp => { console.log("Joined successfully", resp) })
-        .receive("error", resp => { console.log("Unable to join", resp) });
-
-    $('#game-button').click(() => {
-        let xx = $('#game-input').val();
-        window.gameName = xx;
-        window.location.href='/game/' + xx;
-    });
-}
-
 function start() {
+  socket.connect();
     let root = document.getElementById('root');
     if (root) {
         let channel = socket.channel("games:" + window.gameName, {});
@@ -46,4 +34,3 @@ function start() {
 }
 
 $(start);
-
