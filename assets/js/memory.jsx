@@ -50,6 +50,7 @@ class Memory extends React.Component {
     }
 
     restart() {
+        // TODO fix or delete
         this.channel.push("restart").receive("ok", this.receiveView.bind(this));
     }
 
@@ -87,6 +88,8 @@ class Memory extends React.Component {
     }
 
     render() {
+        // TODO: add win screen w/ link to lobby
+
         return (
             <div className="game">
                 {this.hasWon() ? <p>YOU WON !!!</p> : <p>Super Cool Memory Game</p>}

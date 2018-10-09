@@ -45,7 +45,7 @@ defmodule Memory.Game do
   end
 
   def new_player(game) do
-    # Increment player number
+    # TODO Increment player number
     %{
       playerNum: 1,
       numClicks: 0,
@@ -80,12 +80,12 @@ defmodule Memory.Game do
   end
 
   def inactive_tiles(game, index) do
-    # TODO record if player has scored tiles
     if (length(game.visibleTiles) == 2) do
       visible_tile1 = Enum.at(game.visibleTiles, 0)
       visible_tile2 = Enum.at(game.visibleTiles, 1)
 
       if (visible_tile1.value == visible_tile2.value) do
+        # TODO record if player has scored tiles
         Enum.concat(game.inactiveTiles, [visible_tile1, visible_tile2])
       else
         game.inactiveTiles
