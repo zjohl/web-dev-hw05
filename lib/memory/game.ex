@@ -58,6 +58,8 @@ defmodule Memory.Game do
       numClicks: game.numClicks,
       visibleTiles: game.visibleTiles,
       inactiveTiles: game.inactiveTiles,
+      players: game.players,
+      currentPlayer: game.currentPlayer,
     }
   end
 
@@ -104,7 +106,8 @@ defmodule Memory.Game do
 
     new_game = game
     if (pinfo.playerNum == game.currentPlayer) do
-#      TODO update currentPlayer
+# TODO update currentPlayer
+# TODO can't click unless two players
       new_game = Map.put(game, :numClicks, game.numClicks + 1) # TODO convert this to per-player click count
       new_game = Map.put(new_game, :visibleTiles, visible_tiles(game, index))
       Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, index))
