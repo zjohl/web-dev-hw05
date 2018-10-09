@@ -44,10 +44,13 @@ defmodule Memory.Game do
     }
   end
 
+  def next_player_num(game) do
+    map_size(Map.get(game, :players, %{})) + 1
+  end
+
   def new_player(game) do
-    # TODO Increment player number
     %{
-      playerNum: 1,
+      playerNum: next_player_num(game),
       numClicks: 0,
       numCorrect: 0,
     }
@@ -114,8 +117,8 @@ defmodule Memory.Game do
 
     new_game = Map.put(new_game, :visibleTiles, visible_tiles(new_game, pinfo, index))
     new_game = Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, pinfo, index))
+    new_game = Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
 
-    Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
     IO.puts inspect new_game, pretty: true
     new_game
   end
