@@ -76,6 +76,13 @@ defmodule Memory.Game do
     pinfo.playerNum == game.currentPlayer && map_size(Map.get(game, :players)) >= 2
   end
 
+  def player_score(game, pinfo, previously_scored) do
+    num_previously_scored = length(previously_scored)
+    num_scored = length(game.inactiveTiles)
+
+    pinfo.numCorrect + (num_scored - num_previously_scored)
+  end
+
   def visible_tiles(game, pinfo, index) do
     clicked_tile = get_tile(game, index)
     cond do
@@ -114,12 +121,15 @@ defmodule Memory.Game do
     players = Map.get(game, :players)
     pinfo = Map.get(players, user, new_player(game))
 
+    previously_scored = Map.get(game, :inactiveTiles)
     new_game = game
-# TODO update currentPlayer, remember this is every 2 clicks (can use can_click to determine if this click is valid)
+    # TODO update currentPlayer, remember this is every 2 clicks (can use can_click to determine if this click is valid)
     pinfo = Map.put(pinfo, :numClicks, pinfo.numClicks + 1)
     new_game = Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
     new_game = Map.put(new_game, :visibleTiles, visible_tiles(new_game, pinfo, index))
     new_game = Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, pinfo, index))
+    pinfo = Map.put(pinfo, :numCorrect, player_score(game, pinfo, previously_scored))
+    new_game = Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
 
     IO.puts inspect new_game, pretty: true
     new_game
