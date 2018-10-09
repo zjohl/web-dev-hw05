@@ -15,7 +15,6 @@ defmodule Memory.Game do
 #
 
   # Things to keep track of:index
-  # numClicks: 0,
   # visibleTiles: {},
   # inactiveTiles: {},
   #
@@ -25,7 +24,6 @@ defmodule Memory.Game do
   def new do
     %{
       tiles: new_game(),
-      numClicks: 0,
       visibleTiles: [],
       inactiveTiles: [],
       players: %{},
@@ -36,7 +34,6 @@ defmodule Memory.Game do
   def restart do
     %{
       tiles: new_game(),
-      numClicks: 0,
       visibleTiles: [],
       inactiveTiles: [],
       players: %{},
@@ -58,7 +55,6 @@ defmodule Memory.Game do
 
   def client_view(game, user) do
     %{
-      numClicks: game.numClicks,
       visibleTiles: game.visibleTiles,
       inactiveTiles: game.inactiveTiles,
       players: game.players,
@@ -124,7 +120,7 @@ defmodule Memory.Game do
     previously_scored = Map.get(game, :inactiveTiles)
     new_game = game
     # TODO update currentPlayer, remember this is every 2 clicks (can use can_click to determine if this click is valid)
-    pinfo = Map.put(pinfo, :numClicks, pinfo.numClicks + 1)
+    pinfo = Map.put(pinfo, :numClicks, pinfo.numClicks + 1) # TODO Should this only be clicks when it is that player's turn?
     new_game = Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
     new_game = Map.put(new_game, :visibleTiles, visible_tiles(new_game, pinfo, index))
     new_game = Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, pinfo, index))

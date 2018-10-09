@@ -17,7 +17,8 @@ class Memory extends React.Component {
         this.state = {
             allowClicks: true,
             numTiles: 16,
-            numClicks: 0,
+            playerName: window.playerName,
+            players: [],
             visibleTiles: [],
             inactiveTiles: [],
         };
@@ -68,6 +69,13 @@ class Memory extends React.Component {
         }
     }
 
+    numClicks() {
+        let players = this.state.players;
+        let playerName = this.state.playerName;
+
+        return _.get(_.get(players, playerName), 'numClicks');
+    }
+
     renderTiles() {
         let tiles = [];
         for(let i = 0; i < this.state.numTiles; i++) {
@@ -97,7 +105,7 @@ class Memory extends React.Component {
                     {this.renderTiles()}
                 </div>
                 <button className="restart-button" onClick={this.restart.bind(this)}>Restart</button>
-                <p>Num Clicks: {this.state.numClicks}</p>
+                <p>Num Clicks: {this.numClicks()}</p>
             </div>
         );
     }
