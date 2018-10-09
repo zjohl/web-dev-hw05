@@ -69,9 +69,11 @@ defmodule Memory.Game do
     end)
   end
 
-  def visible_tiles(game, index) do
+  def visible_tiles(game, pinfo, index) do
     clicked_tile = get_tile(game, index)
     cond do
+      (pinfo.playerNum != game.currentPlayer) ->
+        game.visibleTiles
       (length(game.visibleTiles) == 2) ->
         [clicked_tile]
       (length(game.visibleTiles) == 1 && Enum.at(game.visibleTiles, 0).index != clicked_tile.index) ->
@@ -81,8 +83,8 @@ defmodule Memory.Game do
     end
   end
 
-  def inactive_tiles(game, index) do
-    if (length(game.visibleTiles) == 2) do
+  def inactive_tiles(game, pinfo, index) do
+    if (pinfo.playerNum == game.currentPlayer && length(game.visibleTiles) == 2) do
       visible_tile1 = Enum.at(game.visibleTiles, 0)
       visible_tile2 = Enum.at(game.visibleTiles, 1)
 
@@ -102,17 +104,20 @@ defmodule Memory.Game do
       raise "That's not a real tile"
     end
 
-    pinfo = Map.get(game, user, new_player(game))
+    players = Map.get(game, :players)
+    pinfo = Map.get(players, user, new_player(game))
 
     new_game = game
-    if (pinfo.playerNum == game.currentPlayer) do
 # TODO update currentPlayer
 # TODO can't click unless two players
-      new_game = Map.put(game, :numClicks, game.numClicks + 1) # TODO convert this to per-player click count
-      new_game = Map.put(new_game, :visibleTiles, visible_tiles(game, index))
-      Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, index))
-    end
+    pinfo = Map.put(pinfo, :numClicks, pinfo.numClicks + 1)
+
+    new_game = Map.put(new_game, :visibleTiles, visible_tiles(new_game, pinfo, index))
+    new_game = Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, pinfo, index))
+
     Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
+    IO.puts inspect new_game, pretty: true
+    new_game
   end
 
   def new_game do
