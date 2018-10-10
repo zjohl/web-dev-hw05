@@ -28,6 +28,8 @@ defmodule Memory.Game do
       inactiveTiles: [],
       players: %{},
       currentPlayer: 1,
+      currentPlayerClicks: 0,
+      changed: true,
     }
   end
 
@@ -38,6 +40,8 @@ defmodule Memory.Game do
       inactiveTiles: [],
       players: %{},
       currentPlayer: 1,
+      currentPlayerClicks: 0,
+      changed: true,
     }
   end
 
@@ -64,6 +68,7 @@ defmodule Memory.Game do
       inactiveTiles: game.inactiveTiles,
       players: game.players,
       currentPlayer: game.currentPlayer,
+      changed: game.changed,
     }
   end
 
@@ -75,6 +80,30 @@ defmodule Memory.Game do
 
   def can_click(game, pinfo) do
     pinfo.playerNum == game.currentPlayer && map_size(Map.get(game, :players)) >= 2
+  end
+
+  def current_player(game, pinfo) do
+    if (can_click(game, pinfo) && game.currentPlayerClicks == 2) do
+      if (game.currentPlayer == 1) do
+        2
+      else
+        1
+      end
+    else
+      game.currentPlayer
+    end
+  end
+
+  def current_player_clicks(game, pinfo) do
+    if (can_click(game, pinfo)) do
+      if (game.currentPlayerClicks == 2) do
+        1
+      else
+        game.currentPlayerClicks + 1
+      end
+    else
+      game.currentPlayerClicks
+    end
   end
 
   def player_score(game, pinfo, previously_scored) do
@@ -122,13 +151,16 @@ defmodule Memory.Game do
     pinfo = Map.get(players, user, new_player(game))
 
     previously_scored = game.inactiveTiles
-    # TODO update currentPlayer, remember this is every 2 clicks (can use can_click to determine if this click is valid)
-    pinfo = Map.put(pinfo, :numClicks, pinfo.numClicks + 1) # TODO Should this only be clicks when it is that player's turn?
+
+    pinfo = Map.put(pinfo, :numClicks, pinfo.numClicks + 1)
     game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
     game = Map.put(game, :visibleTiles, visible_tiles(game, pinfo, index))
     game = Map.put(game, :inactiveTiles, inactive_tiles(game, pinfo, index))
     pinfo = Map.put(pinfo, :numCorrect, player_score(game, pinfo, previously_scored))
     game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
+    game = Map.put(game, :changed, can_click(game, pinfo))
+    game = Map.put(game, :currentPlayerClicks, current_player_clicks(game, pinfo))
+    game = Map.put(game, :currentPlayer, current_player(game, pinfo))
 
     IO.puts inspect game, pretty: true
     game
