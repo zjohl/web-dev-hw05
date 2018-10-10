@@ -26,6 +26,8 @@ class Memory extends React.Component {
         this.channel.join()
             .receive("ok", this.receiveView.bind(this))
             .receive("error", resp => { console.log("Unable to join", resp) });
+
+        this.channel.on("update", this.receiveView.bind(this));
     }
 
     receiveView(view) {
