@@ -15,7 +15,7 @@ defmodule Memory.GameServer do
   end
 
   def click(game, user, index) do
-    GenServer.call(__MODULE__, {:guess, game, user, index})
+    GenServer.call(__MODULE__, {:click, game, user, index})
   end
 
   ## Implementations
@@ -28,7 +28,7 @@ defmodule Memory.GameServer do
     {:reply, Game.client_view(gg, user), Map.put(state, game, gg)}
   end
 
-  def handle_call({:guess, game, user, index}, _from, state) do
+  def handle_call({:click, game, user, index}, _from, state) do
     gg = Map.get(state, game, Game.new)
          |> Game.click(user, index)
     vv = Game.client_view(gg, user)
