@@ -54,6 +54,11 @@ defmodule Memory.Game do
   end
 
   def client_view(game, user) do
+    # If this player doesn't exist, add them
+    players = Map.get(game, :players)
+    pinfo = Map.get(players, user, new_player(game))
+    game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
+
     %{
       visibleTiles: game.visibleTiles,
       inactiveTiles: game.inactiveTiles,
@@ -99,7 +104,6 @@ defmodule Memory.Game do
       visible_tile2 = Enum.at(game.visibleTiles, 1)
 
       if (visible_tile1.value == visible_tile2.value) do
-        # TODO record if player has scored tiles
         Enum.concat(game.inactiveTiles, [visible_tile1, visible_tile2])
       else
         game.inactiveTiles
@@ -117,18 +121,17 @@ defmodule Memory.Game do
     players = Map.get(game, :players)
     pinfo = Map.get(players, user, new_player(game))
 
-    previously_scored = Map.get(game, :inactiveTiles)
-    new_game = game
+    previously_scored = game.inactiveTiles
     # TODO update currentPlayer, remember this is every 2 clicks (can use can_click to determine if this click is valid)
     pinfo = Map.put(pinfo, :numClicks, pinfo.numClicks + 1) # TODO Should this only be clicks when it is that player's turn?
-    new_game = Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
-    new_game = Map.put(new_game, :visibleTiles, visible_tiles(new_game, pinfo, index))
-    new_game = Map.put(new_game, :inactiveTiles, inactive_tiles(new_game, pinfo, index))
+    game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
+    game = Map.put(game, :visibleTiles, visible_tiles(game, pinfo, index))
+    game = Map.put(game, :inactiveTiles, inactive_tiles(game, pinfo, index))
     pinfo = Map.put(pinfo, :numCorrect, player_score(game, pinfo, previously_scored))
-    new_game = Map.update(new_game, :players, %{}, &(Map.put(&1, user, pinfo)))
+    game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
 
-    IO.puts inspect new_game, pretty: true
-    new_game
+    IO.puts inspect game, pretty: true
+    game
   end
 
   def new_game do

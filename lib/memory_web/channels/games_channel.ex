@@ -17,15 +17,13 @@ defmodule MemoryWeb.GamesChannel do
 
   def handle_in("click", %{"index" => ii}, socket) do
     view = GameServer.click(socket.assigns[:game], socket.assigns[:user], ii)
+    broadcast!(socket, "update", %{ "game" => view})
     {:reply, {:ok, %{ "game" => view}}, socket}
   end
 
-  def handle_in("restart", nil, socket) do
-    name = socket.assigns[:name]
-    game = Game.restart()
-    socket = assign(socket, :game, game)
-    BackupAgent.put(name, game)
-    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
+  def handle_in("update",  %{"game" => game}, socket) do
+    push socket, "update", %{"game" => game}
+    {:noreply, socket}
   end
 
   defp authorized?(_payload) do
