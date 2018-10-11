@@ -52,8 +52,14 @@ class Memory extends React.Component {
         }
     }
 
-    hasWon() {
-        return this.state.inactiveTiles.size === this.state.numTiles;
+    gameOver() {
+        return this.state.inactiveTiles.length === this.state.numTiles;
+    }
+
+    winningPlayer() {
+        let maxScore = _.max(_.map(this.state.players, player => {return _.get(player, 'numCorrect')}));
+
+        return _.findKey(this.state.players, player => {return _.get(player, 'numCorrect') === maxScore});
     }
 
     findValue(index) {
@@ -93,11 +99,18 @@ class Memory extends React.Component {
     }
 
     render() {
-        // TODO: add win screen w/ link to lobby
+        if(this.gameOver()) {
+            return (
+                <div>
+                    <h2>Player {this.winningPlayer()} won the game</h2>
+                    <a href="/">Return to Lobby</a>
+                </div>
+            );
+        }
 
         return (
             <div className="game">
-                {this.hasWon() ? <p>YOU WON !!!</p> : <p>Super Cool Memory Game</p>}
+                <p>Super Cool Memory Game</p>
                 <div className="tiles">
                     {this.renderTiles()}
                 </div>
