@@ -52,11 +52,6 @@ class Memory extends React.Component {
         }
     }
 
-    restart() {
-        // TODO fix or delete
-        this.channel.push("restart").receive("ok", this.receiveView.bind(this));
-    }
-
     hasWon() {
         return this.state.inactiveTiles.size === this.state.numTiles;
     }
@@ -106,7 +101,6 @@ class Memory extends React.Component {
                 <div className="tiles">
                     {this.renderTiles()}
                 </div>
-                <button className="restart-button" onClick={this.restart.bind(this)}>Restart</button>
                 <p>Num Clicks: {this.numClicks()}</p>
             </div>
         );
