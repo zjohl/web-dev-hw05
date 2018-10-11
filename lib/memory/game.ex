@@ -58,11 +58,6 @@ defmodule Memory.Game do
   end
 
   def client_view(game, user) do
-    # If this player doesn't exist, add them
-    players = Map.get(game, :players)
-    pinfo = Map.get(players, user, new_player(game))
-    game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
-
     %{
       visibleTiles: game.visibleTiles,
       inactiveTiles: game.inactiveTiles,
@@ -80,6 +75,14 @@ defmodule Memory.Game do
 
   def can_click(game, pinfo) do
     pinfo.playerNum == game.currentPlayer && map_size(Map.get(game, :players)) >= 2
+  end
+
+  def num_clicks(game, pinfo) do
+    if(can_click(game, pinfo)) do
+      pinfo.numClicks + 1
+    else
+      pinfo.numClicks
+    end
   end
 
   def current_player(game, pinfo) do
@@ -142,6 +145,12 @@ defmodule Memory.Game do
     end
   end
 
+  def add_player(game, user) do
+    players = Map.get(game, :players)
+    pinfo = Map.get(players, user, new_player(game))
+    game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
+  end
+
   def click(game, user, index) do
     if index >= 16 || index < 0 do
       raise "That's not a real tile"
@@ -152,15 +161,18 @@ defmodule Memory.Game do
 
     previously_scored = game.inactiveTiles
 
-    pinfo = Map.put(pinfo, :numClicks, pinfo.numClicks + 1)
+    pinfo = Map.put(pinfo, :numClicks, num_clicks(game, pinfo))
+
     game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
     game = Map.put(game, :visibleTiles, visible_tiles(game, pinfo, index))
     game = Map.put(game, :inactiveTiles, inactive_tiles(game, pinfo, index))
+
     pinfo = Map.put(pinfo, :numCorrect, player_score(game, pinfo, previously_scored))
-    game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
+
     game = Map.put(game, :changed, can_click(game, pinfo))
     game = Map.put(game, :currentPlayerClicks, current_player_clicks(game, pinfo))
     game = Map.put(game, :currentPlayer, current_player(game, pinfo))
+    game = Map.update(game, :players, %{}, &(Map.put(&1, user, pinfo)))
 
     IO.puts inspect game, pretty: true
     game

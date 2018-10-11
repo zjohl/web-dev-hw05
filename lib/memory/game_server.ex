@@ -25,7 +25,7 @@ defmodule Memory.GameServer do
 
   def handle_call({:view, game, user}, _from, state) do
     gg = Map.get(state, game, Game.new)
-    {:reply, Game.client_view(gg, user), Map.put(state, game, gg)}
+    {:reply, Game.client_view(gg, user), Map.put(state, game, Game.add_player(gg, user))}
   end
 
   def handle_call({:click, game, user, index}, _from, state) do
